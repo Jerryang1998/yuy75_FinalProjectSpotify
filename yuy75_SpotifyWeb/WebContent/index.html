@@ -1,0 +1,168 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Spotify</title>
+<style>
+	*{
+		background-color:#828282;
+		margin:0;
+		padding:0;
+	}
+	table, th, td {
+    border: 1px solid black;
+    background:lightgrey;
+	}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.2/knockout-min.js"></script>
+<script>
+
+var searchTerm = null;
+$(document).ready(function(){
+$("#btnSearch").click(function(){
+	var searchTerm = $("#txtSearch").val();
+	
+	if($('#optSongs').is(':checked')){
+		searchSongs(searchTerm);
+	}
+	else if($('#optAlbums').is(':checked')){
+		searchAlbums(searchTerm);
+	}
+	else if($('#optArtists').is(':checked')){
+		searchArtists(searchTerm);
+	}
+})
+})
+
+function searchSongs(searchTerm){
+	//ko.cleanNode(data);
+	var searchUrl = "api/get_songs?searchTerm=" + searchTerm;
+	console.log(searchUrl);
+	$.get(searchUrl, function(data){
+		console.log(data);
+		songSearchResults(data);
+	});
+}
+function searchArtists(searchTerm){
+	//ko.cleanNode(data);
+	var searchUrl = "api/get_artists?searchTerm=" + searchTerm;
+	console.log(searchUrl);
+	$.get(searchUrl, function(data){
+		console.log(data);
+		artistSearchResults(data);
+	});
+}
+function searchAlbums(searchTerm){
+	//ko.cleanNode(data);
+	var searchUrl = "api/get_albums?searchTerm=" + searchTerm;
+	console.log(searchUrl);
+	$.get(searchUrl, function(data){
+		console.log(data);
+		albumSearchResults(data);
+	});
+}
+
+function songSearchResults(data){
+	
+	console.log(data.songs);
+	var tbldata = $("#tblDataSongs").find("tbody")[0];
+	ko.cleanNode(tblDataSongs); 
+	ko.applyBindings(data, tbldata);
+}
+
+function artistSearchResults(data){
+	
+	console.log(data.artists);
+	var tbldata = $("#tblDataArtists").find("tbody")[0];
+	ko.cleanNode(tblDataArtists); 
+	ko.applyBindings(data, tbldata);
+}
+
+function albumSearchResults(data){
+	
+	console.log(data.albums);
+	var tbldata = $("#tblDataAlbums").find("tbody")[0];
+	ko.cleanNode(tblDataAlbums); 
+	ko.applyBindings(data, tbldata);
+}
+
+function songList(){
+	self = this;
+}
+function albumList(){
+	self = this;
+}
+function artistList(){
+	self = this;
+}
+</script>
+</head>
+<body>
+<div id="menu" style="background:linear-gradient(to top,#828282,#000000);margin:auto;padding:auto;height:650px;width:200px;float:left;">
+	<h1 align="center" style="color:white;background-color:initial;margin:20px;font-family:Comic Sans MS;">Spotify</h1>
+	<select id="cboSearchBy" style="background-color:white;margin:10px;">
+		<option id="optSongs" value="song">Search by song title</option>
+		<option id="optArtists" value="artist">Search by artist name</option>
+		<option id="optAlbums" value="album">Search by album title</option>
+	</select>
+	<br />
+	<input type="text" id="txtSearch" value="" style="background-color:white;margin:10px;" />
+	<br />
+	<input type="button" id="btnSearch" value="Search" style="background-color:white;margin:10px;" />
+</div>
+<div id="songsTable">
+<table id="tblDataSongs" border="1" cellspacing="0" cellpadding="4" float="left" >
+	<thead>
+		<tr>
+			<th>Title</th><th>Length</th><th>Release Date</th><th>Play</th>
+		</tr>
+	</thead>
+	<tbody data-bind="foreach: songs">
+		<tr>
+			<td data-bind="text: song_title"></td>
+	        <td data-bind="text: length"></td>
+	        <td data-bind="text: release_date"></td>
+	        <td><audio controls><source src="songs/SampleAudio_0.4mb.mp3" type="audio/mpeg"></audio></td>
+		</tr>
+	</tbody>
+</table>
+</div>
+<div id="albumsTable">
+<table id="tblDataAlbums" border="1" cellspacing="0" cellpadding="" float="left" >
+	<thead>
+		<tr>
+			<th>Title</th><th>Length</th><th>Release Date</th><th>Recording Company Name</th><th>Number of Tracks</th><th>PMRC Rating</th>
+		</tr>
+	</thead>
+	<tbody data-bind="foreach: albums">
+		<tr>
+			<td data-bind="text: title"></td>
+	        <td data-bind="text: length"></td>
+	        <td data-bind="text: release_date"></td>
+	        <td data-bind="text: recording_company_name"></td>
+	        <td data-bind="text: number_of_tracks"></td>
+	        <td data-bind="text: PMRC_rating"></td>
+		</tr>
+	</tbody>
+</table>
+</div>
+<div id="artistsTable">
+<table id="tblDataArtists" border="1" cellspacing="0" cellpadding="3" float="left" >
+	<thead>
+		<tr>
+			<th>First Name</th><th>Last Name</th><th>Band Name</th>
+		</tr>
+	</thead>
+	<tbody data-bind="foreach: artists">
+		<tr>
+			<td data-bind="text: first_name"></td>
+	        <td data-bind="text: last_name"></td>
+	        <td data-bind="text: band_name"></td>
+		</tr>
+	</tbody>
+</table>
+</div>
+</body>
+</html>
